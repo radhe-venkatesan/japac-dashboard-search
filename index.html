@@ -204,6 +204,29 @@ mark{background:#4a1a00;color:#FF8C00;border-radius:2px;padding:0 1px;}
 .divider span{font-size:10px;color:#333;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
 .down-arrow{text-align:center;color:#2a2a2a;font-size:18px;margin:8px 0;}
 
+/* ── Why tab ── */
+.why-page{padding:52px 32px 72px;max-width:760px;margin:0 auto;}
+.why-page .eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#FF0000;font-weight:700;margin-bottom:14px;text-align:center;}
+.why-page h2{font-size:28px;font-weight:700;text-align:center;margin-bottom:10px;line-height:1.3;}
+.why-page .subtitle{font-size:14px;color:#555;text-align:center;margin-bottom:52px;line-height:1.7;}
+.why-section{margin-bottom:44px;}
+.why-section .sec-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#444;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.why-section .sec-label::after{content:'';flex:1;height:1px;background:#1e1e1e;}
+.why-block{background:#141414;border:1px solid #222;border-radius:16px;padding:28px 32px;margin-bottom:14px;}
+.why-block.red{border-color:#3a0000;background:#110000;}
+.why-block.green{border-color:#003a2a;background:#001510;}
+.why-block.blue{border-color:#001e40;background:#000d1f;}
+.why-block .bicon{font-size:32px;margin-bottom:14px;display:block;}
+.why-block h3{font-size:17px;font-weight:700;color:#fff;margin-bottom:10px;line-height:1.4;}
+.why-block p{font-size:13px;color:#777;line-height:1.8;margin-bottom:10px;}
+.why-block p:last-child{margin-bottom:0;}
+.why-block p strong{color:#bbb;}
+.gain-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.gain-card{background:#141414;border:1px solid #1e1e1e;border-radius:14px;padding:20px 22px;}
+.gain-card .g-num{font-size:28px;font-weight:800;color:#FF0000;margin-bottom:4px;line-height:1;}
+.gain-card h4{font-size:12px;font-weight:700;color:#fff;margin-bottom:6px;}
+.gain-card p{font-size:11px;color:#555;line-height:1.6;}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:#111;}
@@ -234,6 +257,9 @@ mark{background:#4a1a00;color:#FF8C00;border-radius:2px;padding:0 1px;}
   </button>
   <button class="tab-btn" onclick="switchTab('workflow',this)">
     <span class="tab-icon">⚙️</span> How It Was Built
+  </button>
+  <button class="tab-btn" onclick="switchTab('why',this)">
+    <span class="tab-icon">💡</span> Why This Exists
   </button>
 </div>
 
@@ -400,6 +426,71 @@ mark{background:#4a1a00;color:#FF8C00;border-radius:2px;padding:0 1px;}
 
 </div>
 </div><!-- /tab-workflow -->
+<!-- ══════════════════════════════════════════════════
+     TAB 3 — WHY THIS EXISTS
+══════════════════════════════════════════════════ -->
+<div class="tab-pane" id="tab-why">
+<div class="why-page">
+
+  <div class="eyebrow">● Adobe JAPAC Sales Operations</div>
+  <h2>Why We Built This</h2>
+  <p class="subtitle">A bit of context before you start clicking around</p>
+
+  <div class="why-section">
+    <div class="sec-label">The Problem</div>
+    <div class="why-block red">
+      <span class="bicon">😓</span>
+      <h3>Too many dashboards. Too little clarity.</h3>
+      <p>We have 17 Power BI dashboards across the JAPAC team. Each one tracks different things, uses different terminology, and lives in a different corner of the app. When someone needs a specific number before a call, the process is pretty painful — open multiple dashboards, try to remember which one has what, ask a colleague, or just give up and wing it.</p>
+      <p>And when someone new joins the team? Good luck figuring out what <strong>GNARR</strong>, <strong>WFCU</strong>, or <strong>RBOB</strong> actually means without sitting down with someone for half an hour.</p>
+    </div>
+  </div>
+
+  <div class="why-section">
+    <div class="sec-label">The Solution</div>
+    <div class="why-block green">
+      <span class="bicon">🔍</span>
+      <h3>Every measure. One search.</h3>
+      <p>We took all 826 measures from all 17 dashboards and put them in one place. Type anything into the search bar — a keyword, a metric name, a category — and you get the measure, its definition, which dashboard it lives in, and a direct link to open it. That is it.</p>
+      <p>No more hunting. No more asking around. No more opening five reports to find one number.</p>
+    </div>
+    <div class="why-block blue">
+      <span class="bicon">🤖</span>
+      <h3>How it was put together</h3>
+      <p>We used Claude AI running inside VS Code to read the PDF exports of each dashboard and extract every measure, definition, category, and format automatically. The whole thing is powered by a structured Excel repository that we can keep updating as dashboards evolve. When a new dashboard is added, we update the repository and the app reflects it immediately.</p>
+    </div>
+  </div>
+
+  <div class="why-section">
+    <div class="sec-label">What This Means for You</div>
+    <div class="gain-grid">
+      <div class="gain-card">
+        <div class="g-num">10s</div>
+        <h4>Find any measure instantly</h4>
+        <p>What used to mean opening 3 or 4 dashboards now takes a single search.</p>
+      </div>
+      <div class="gain-card">
+        <div class="g-num">826</div>
+        <h4>Measures documented</h4>
+        <p>Every metric we track, defined clearly in plain language so anyone on the team can understand it.</p>
+      </div>
+      <div class="gain-card">
+        <div class="g-num">17</div>
+        <h4>Dashboards covered</h4>
+        <p>From My Account Dashboard to the Management Dashboard — all in one place.</p>
+      </div>
+      <div class="gain-card">
+        <div class="g-num">0</div>
+        <h4>Back and forth needed</h4>
+        <p>New team members can now self-serve on what we track without needing a walkthrough from someone.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /tab-why -->
+
+
 
 <script>
 /* ── Tab switching ── */

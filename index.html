@@ -232,6 +232,13 @@ mark{background:#4a1a00;color:#FF8C00;border-radius:2px;padding:0 1px;}
 .gain-card h4{font-size:12px;font-weight:700;color:#fff;margin-bottom:6px;}
 .gain-card p{font-size:11px;color:#555;line-height:1.6;}
 
+/* ── Fuzzy match banner ── */
+.fuzzy-note{
+  font-size:12px;color:#888;background:#1e1e1e;border:1px solid #2a2a2a;
+  border-radius:8px;padding:8px 14px;margin-bottom:12px;
+}
+.fuzzy-note strong{color:#bbb;}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:#111;}
@@ -488,6 +495,7 @@ mark{background:#4a1a00;color:#FF8C00;border-radius:2px;padding:0 1px;}
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
 <script>
 /* ── Tab switching ── */
 function switchTab(id, btn) {
@@ -505,6 +513,21 @@ const DASH_COLOURS  = {"MAD": "#FF0000", "GP": "#1473E6", "CB": "#1473E6", "BBD"
 
 let currentFilter = 'all';
 let currentQuery  = '';
+
+const fuseOpts = {
+  includeScore: true,
+  threshold: 0.4,
+  ignoreLocation: true,
+  minMatchCharLength: 2,
+  keys: [
+    { name: 'name',       weight: 0.5 },
+    { name: 'short',      weight: 0.3 },
+    { name: 'category',   weight: 0.1 },
+    { name: 'dashboard',  weight: 0.05 },
+    { name: 'definition', weight: 0.05 },
+  ]
+};
+const fuseAll = new Fuse(MEASURES, fuseOpts);
 
 /* Build dashboard filter buttons */
 const filtersEl = document.getElementById('filters');
@@ -540,30 +563,50 @@ function highlight(text, q) {
 }
 
 function render() {
-  const q   = currentQuery.toLowerCase().trim();
+  const q   = currentQuery.trim();
+  const ql  = q.toLowerCase();
   const res = document.getElementById('results');
   const cnt = document.getElementById('result-count');
 
-  let filtered = MEASURES;
-  if (currentFilter !== 'all') filtered = filtered.filter(m => m.code === currentFilter);
-  if (q) filtered = filtered.filter(m =>
-    m.name.toLowerCase().includes(q) || m.short.toLowerCase().includes(q) ||
-    m.definition.toLowerCase().includes(q) || m.category.toLowerCase().includes(q) ||
-    m.dashboard.toLowerCase().includes(q)
-  );
+  if (!q && currentFilter === 'all') { res.innerHTML = ''; cnt.textContent = ''; return; }
+
+  // Pool: apply dashboard filter first
+  const pool = currentFilter !== 'all' ? MEASURES.filter(m => m.code === currentFilter) : MEASURES;
+
+  let filtered;
+  let isFuzzy = false;
+
+  if (q) {
+    // Exact match
+    filtered = pool.filter(m =>
+      m.name.toLowerCase().includes(ql) || m.short.toLowerCase().includes(ql) ||
+      m.definition.toLowerCase().includes(ql) || m.category.toLowerCase().includes(ql) ||
+      m.dashboard.toLowerCase().includes(ql)
+    );
+    // Fuzzy fallback
+    if (filtered.length === 0) {
+      const f = pool === MEASURES ? fuseAll : new Fuse(pool, fuseOpts);
+      filtered = f.search(q, { limit: 40 }).map(r => r.item);
+      isFuzzy = filtered.length > 0;
+    }
+  } else {
+    filtered = pool;
+  }
 
   cnt.textContent = (q || currentFilter !== 'all')
-    ? `${filtered.length} result${filtered.length !== 1 ? 's' : ''} found`
+    ? `${filtered.length} result${filtered.length !== 1 ? 's' : ''}${isFuzzy ? ' — closest matches' : ' found'}`
     : '';
-
-  if (!q && currentFilter === 'all') { res.innerHTML = ''; return; }
 
   if (filtered.length === 0) {
     res.innerHTML = `<div class="no-results"><span>🔍</span>No measures match "<strong>${q || currentFilter}</strong>"<br><span style="font-size:12px;display:block;margin-top:6px;">Try a different keyword or clear the dashboard filter</span></div>`;
     return;
   }
 
-  res.innerHTML = filtered.slice(0, 300).map(m => {
+  const fuzzyBanner = isFuzzy
+    ? `<div class="fuzzy-note">No exact match for "<strong>${q}</strong>" — showing closest results</div>`
+    : '';
+
+  res.innerHTML = fuzzyBanner + filtered.slice(0, 300).map(m => {
     const dc = DASH_COLOURS[m.code] || '#888';
     const cc = CAT_COLOURS[m.category] || '#6E6E6E';
     const hasUrl = m.url && m.url.startsWith('http');
